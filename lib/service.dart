@@ -6,7 +6,7 @@ class Service {
   static const baseURL = "http://localhost:1337";
 
   String? _token;
-  set token(String val) {
+  set token(String? val) {
     _token = val;
   }
 
@@ -17,6 +17,7 @@ class Service {
       headers['Authorization'] = "Bearer $_token";
     }
     final result = await http.get(uri, headers: headers);
+    if (result.statusCode >= 400) throw result.body;
     return jsonDecode(result.body);
   }
 
@@ -28,6 +29,7 @@ class Service {
       headers['Authorization'] = "Bearer $_token";
     }
     final result = await http.post(uri, headers: headers, body: data);
+    if (result.statusCode >= 400) throw result.body;
     return jsonDecode(result.body);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:donation/service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
   final service = Service();
@@ -11,8 +12,18 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  init() {
+  AppState() {
+    init();
+  }
+
+  init() async {
+    await fetchToken();
     fetchCurrentUser();
+  }
+
+  fetchToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    service.token = prefs.getString("token");
   }
 
   fetchCurrentUser() async {
@@ -26,6 +37,8 @@ class AppState extends ChangeNotifier {
       'password': password,
     });
     service.token = result['jwt'];
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString("token", result['jwt']);
     return fetchCurrentUser();
   }
 
