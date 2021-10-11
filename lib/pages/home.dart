@@ -1,4 +1,5 @@
 import 'package:donation/app_state.dart';
+import 'package:donation/pages/new_bill.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,10 @@ class HomePage extends StatelessWidget {
                   icon: Icon(Icons.money),
                 )
               : FloatingActionButton.extended(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => NewBillPage()));
+                  },
                   label: Text("New Bill"),
                   icon: Icon(Icons.receipt_long),
                 ),
