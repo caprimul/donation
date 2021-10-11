@@ -45,7 +45,29 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Consumer<AppState>(builder: (context, state, _) {
+      return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("Donation"),
+            bottom: TabBar(
+              tabs: [
+                Tab(text: "My Donations"),
+                Tab(text: "Transactions"),
+              ],
+            ),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {},
+            label: Text("New Donation"),
+            icon: Icon(Icons.money),
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+        ),
+      );
+    });
   }
 }
 
@@ -233,7 +255,14 @@ class _SignupPageState extends State<SignupPage> {
                         final shopLocation = shopLocationController.text;
 
                         try {
-                          await service.signUp(name, email, password);
+                          await service.signUp(
+                            selectedType,
+                            name,
+                            email,
+                            password,
+                            shopName: shopName,
+                            shopLocation: shopLocation,
+                          );
                           Navigator.of(context).pop();
                         } catch (e) {
                           showDialog(

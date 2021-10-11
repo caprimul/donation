@@ -17,7 +17,7 @@ class AppState extends ChangeNotifier {
 
   fetchCurrentUser() async {
     final result = await service.get('/users/me');
-    currentUser = User(username: result["username"], email: result["email"]);
+    currentUser = User.fromMap(result);
   }
 
   logIn(String email, String password) async {
@@ -29,8 +29,22 @@ class AppState extends ChangeNotifier {
     return fetchCurrentUser();
   }
 
-  signUp(String username, String email, String password) async {
-    final user = User(username: username, email: email, password: password);
+  signUp(
+    UserType type,
+    String username,
+    String email,
+    String password, {
+    String? shopName,
+    String? shopLocation,
+  }) async {
+    final user = User(
+      type: type,
+      username: username,
+      email: email,
+      password: password,
+      shopName: shopName,
+      shopLocation: shopLocation,
+    );
     await user.create();
     return logIn(email, password);
   }
@@ -43,18 +57,40 @@ class User {
   String email;
   String? password;
 
-  User({required this.username, required this.email, this.password});
+  UserType type;
+
+  String? shopName;
+  String? shopLocation;
+
+  User({
+    required this.type,
+    required this.username,
+    required this.email,
+    this.password,
+    this.shopName,
+    this.shopLocation,
+  });
+
+  User.fromMap(Map<String, dynamic> data)
+      : type = UserType.values.firstWhere(
+            (element) => element.toString().split(".").last == data["type"]),
+        username = data["username"],
+        email = data["email"],
+        shopName = data["shop_name"],
+        shopLocation = data["shop_location"];
 
   create() async {
     final result = await Service().post('/auth/local/register', toMap());
-    print(result);
   }
 
-  Map<String, String> toMap() {
+  Map<String, String?> toMap() {
     return {
+      'type': type.toString().split(".").last,
       'username': username,
       'email': email,
-      'password': password ?? "",
+      'password': password,
+      'shop_name': shopName,
+      'shop_location': shopLocation,
     };
   }
 }
