@@ -55,6 +55,7 @@ class _NewBillPageState extends State<NewBillPage> {
                       alert('Error: ID Number cannot be empty');
                     }
                     final bill = Bill(
+                      author: state.currentUser!.id!,
                       name: name,
                       idType: idType,
                       idNumber: idNum,

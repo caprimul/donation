@@ -24,6 +24,15 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
+          body: TabBarView(children: [
+            ListView.builder(
+              itemBuilder: (_, i) => ListTile(
+                title: Text(state.bills[i].name),
+              ),
+              itemCount: state.bills.length,
+            ),
+            Container(),
+          ]),
           floatingActionButton: state.currentUser!.type == UserType.donor
               ? FloatingActionButton.extended(
                   onPressed: () {},

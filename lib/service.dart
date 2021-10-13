@@ -10,7 +10,7 @@ class Service {
     _token = val;
   }
 
-  Future<Map<String, dynamic>> get(String path) async {
+  Future get(String path) async {
     final uri = Uri.parse(baseURL + path);
     final headers = <String, String>{};
     if (_token != null) {

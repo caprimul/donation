@@ -21,6 +21,7 @@ class AppState extends ChangeNotifier {
   init() async {
     await fetchToken();
     fetchCurrentUser();
+    fetchBills();
   }
 
   fetchToken() async {
@@ -67,11 +68,22 @@ class AppState extends ChangeNotifier {
   saveBill(Bill bill) {
     return bill.save(service);
   }
+
+  final List<Bill> _bills = [];
+  List<Bill> get bills => _bills;
+  fetchBills() async {
+    final List result = await service.get('/bills');
+    final parsed = result.map((e) => Bill.fromMap(e));
+    _bills.clear();
+    _bills.addAll(parsed);
+    notifyListeners();
+  }
 }
 
 enum UserType { shopkeeper, donor }
 
 class User {
+  int? id;
   String username;
   String email;
   String? password;
@@ -91,7 +103,8 @@ class User {
   });
 
   User.fromMap(Map<String, dynamic> data)
-      : type = UserType.values.firstWhere(
+      : id = data['id'],
+        type = UserType.values.firstWhere(
             (element) => element.toString().split(".").last == data["type"]),
         username = data["username"],
         email = data["email"],
@@ -131,6 +144,7 @@ class Product {
 }
 
 class Bill {
+  int author;
   String name;
   IDType idType;
   String idNumber;
@@ -138,11 +152,20 @@ class Bill {
   List<Product> products;
 
   Bill({
+    required this.author,
     required this.name,
     required this.idType,
     required this.idNumber,
     required this.products,
   });
+
+  Bill.fromMap(Map<String, dynamic> data)
+      : author = data['author']['id'],
+        name = data['name'],
+        idType = IDType.values.firstWhere(
+            (element) => element.toString().split('.').last == data['id_type']),
+        idNumber = data['id_number'],
+        products = [];
 
   save(Service service) {
     return service.post('/bills', toMap());
@@ -150,6 +173,7 @@ class Bill {
 
   Map<String, String> toMap() {
     return {
+      'author': author.toString(),
       'name': name,
       'id_type': idType.toString().split('.').last,
       'id_number': idNumber,
